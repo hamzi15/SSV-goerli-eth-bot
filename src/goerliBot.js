@@ -11,10 +11,31 @@ const DEFAULT_GAS_PRICE = 1500000000000; // 1,500 gwei
 const INELIGIBLE_NO_CUSTOM_CHECKS_MESSAGE = " is ineligible to receive goerli eth.";
 const INELIGIBLE_CUSTOM_CHECKS_MESSAGE = " is ineligible to receive goerli eth.  You must pass the custom checks;";
 
+<<<<<<< Updated upstream
 // Implement any custom eligibility requirements here
 const runCustomEligibilityChecks = async (address) => {
   // implement custom checks here
   return true;
+=======
+const maxDepositAmount = 1000000000000000 //Maximum amount of GoETH a user can have
+
+
+
+// Implement any custom eligibility requirements here
+const runCustomEligibilityChecks = async (address) => {
+  // implement custom checks here
+  const currentBalance = await etherscan.getBalance(address);   //current user balance
+  const topUpAmount = maxDepositAmount - (currentBalance);
+  console.log('topUpAmount:',topUpAmount);
+  console.log('currentBalance:',currentBalance);
+  if(topUpAmount <= 0 ){
+    return false;                                             //if topUpAmount is less than or equal to 0 reject tx
+  }
+  console.log('TopUpAmount');  
+  const result = await db.confirmTransaction(address, topUpAmount/Math.pow(10,18));
+  console.log("Return of confirm transaction: ",result);
+  return result; //result
+>>>>>>> Stashed changes
 }
 
 const receiverIsEligible = async (address, amountRequested, runCustomChecks)  => {
@@ -87,5 +108,10 @@ module.exports = {
 /* Test Zone */
 
 utils.initializeCachedNonce();
+<<<<<<< Updated upstream
  runGoerliFaucet(null, "0x066Adead2d82A1C2700b4B48ee82ec952b6b18dA", 0.01, false);
+=======
+//runGoerliFaucet(null, "0x066Adead2d82A1C2700b4B48ee82ec952b6b18dA", 0.001, true);
+//hello
+>>>>>>> Stashed changes
 //runGoerliFaucet(null, "0x066Adead2d82A1C2700b4B48ee82ec952b6b18dA", 20, false);
