@@ -1,14 +1,14 @@
 const { checkDeposit } = require('./api.js');
 const { Pool } = require('pg');
 const {confirmTransaction} = require("./db");
-
+const { DB_USERNAME, DB_PASS, DB_HOST, DB_PORT} = process.env
 
 let pool = new Pool({
-    user: 'hamzaasaad',
-    host: 'localhost',
-    database: 'hamzaasaad',
+    user: DB_USERNAME,
+    host: DB_HOST,
+    database: DB_USERNAME,
     password: null,
-    port: 5431,
+    port: DB_PORT,
   })
 pool.connect();
 
