@@ -9,11 +9,13 @@ const contractABI = require('../contract-abi.json');
 const { getGasPrice } = require('./api');
 
 abiDecoder.addABI(contractABI);
-
+const maxTries = 1;
+var count = 0;
 
 // Eth
 exports.getAddressTransactionCount = async (address) => {
   const nonce = await web3.eth.getTransactionCount(address);
+  console.log('Intialized nonce:', nonce);
   return nonce;
 }
 
@@ -41,7 +43,7 @@ exports.getCachedNonce = () => {
 exports.incrementCachedNonce = async () => {
   const currentNonce = this.getCachedNonce();
   const incrementedNonce = this.incrementHexNumber(currentNonce);
-
+  console.log("Increment count",count++);
   this.setCachedNonce(incrementedNonce);
 }
 
@@ -58,15 +60,20 @@ exports.setCachedNonce = (nonce) => {
   })
 }
 
+exports.getNonce = async () => {
+    return await web3.eth.getTransactionCount(process.env.FAUCET_ADDRESS, 'pending'); // nonce starts counting from 0
+}
+
 // Sending the goerli ETH
-exports.sendGoerliEth = async (address, prevMsg, message, methodAbi, amount, nonce, latestGasPrice) => {
+exports.sendGoerliEth = (prevMsg, message, methodAbi, amount, nonce, latestGasPrice) => {
   console.log("Inside sendGoerliETH sending tx...")
   console.log('gasPrice:', latestGasPrice)
+  console.log('Nonce', nonce)
 
   const transaction = {
     from: process.env.FAUCET_ADDRESS,
     to: process.env.CONTRACT_ADDRESS,
-    gas: 1000000,
+    gas: 300000,
     value: web3.utils.numberToHex(web3.utils.toWei(amount.toString(), 'ether')),
     data: methodAbi,
     gasPrice: latestGasPrice,
@@ -75,30 +82,34 @@ exports.sendGoerliEth = async (address, prevMsg, message, methodAbi, amount, non
   }
 
   let embed = new Discord.MessageEmbed()
+
   return web3.eth.accounts.signTransaction(transaction, process.env.FAUCET_PRIVATE_KEY)
           .then(signedTx => web3.eth.sendSignedTransaction(signedTx.rawTransaction))
           .then(receipt => {
-          console.log("Sent to " + message.author.id + " transaction receipt: ", receipt)
+              console.log("Sent to " + message.author.id + "nonce:" + nonce + " transaction receipt: ", receipt)
 
-          if (message) {
-            embed.setDescription(`**Operation Successful**\nSent **${32} goerli ETH** to <@!${message.author.id}> - please wait a few minutes for it to arrive. To check the details at **etherscan.io**, click [here](https://goerli.etherscan.io/tx/${receipt.transactionHash})`)
-                .setTimestamp().setColor(3447003);   //.setURL("https://goerli.etherscan.io/tx/" + receipt.transactionHash)
-            prevMsg.edit(embed);
-          }
-            try {
-              const decodedHexData = abiDecoder.decodeMethod(methodAbi);
-              const pubKey = decodedHexData.params[0].value;
-              db.addLog(message.author.id, message.author.username, pubKey,`https://goerli.etherscan.io/tx/${receipt.transactionHash}`, JSON.stringify(decodedHexData))
-                  .then(result => {
-                    if (result === true) console.log("Tx Logged");
-                    else  console.error('Tx log failed');
-                  })
-            } catch (e) {
-              console.log("Counld not log transaction.");
-            }
+              if (message) {
+                embed.setDescription(`**Operation Successful**\nSent **${32} goerli ETH** to <@!${message.author.id}> - please wait a few minutes for it to arrive. To check the details at **etherscan.io**, click [here](https://goerli.etherscan.io/tx/${receipt.transactionHash})`)
+                    .setTimestamp().setColor(3447003);   //.setURL("https://goerli.etherscan.io/tx/" + receipt.transactionHash)
+                prevMsg.edit(embed);
+              }
+              count = 0;
           })
           .catch(err => {
-            throw err
+            console.log(typeof err);
+            console.error(err);
+            if (count !== maxTries ) {
+              this.getNonce()
+                .then( nonce => this.sendGoerliEth(prevMsg, message, methodAbi, amount, nonce, latestGasPrice))
+              count += 1
+            } else {
+              if (message) {
+                embed.setDescription(`**Transaction failed**Please try again.`)
+                    .setTimestamp().setColor(3447003);   //.setURL("https://goerli.etherscan.io/tx/" + receipt.transactionHash)
+                prevMsg.edit(embed);
+              }
+            }
+
           });
 }
 
@@ -112,3 +123,15 @@ exports.faucetIsReady = async (faucetAddress, amountRequested) => {
   return faucetBalanceNumber > amountRequestedNumber;
 }
 
+/*
+try {
+  const decodedHexData = abiDecoder.decodeMethod(methodAbi);
+  const pubKey = decodedHexData.params[0].value;
+  db.addLog(message.author.id, message.author.username, pubKey,`https://goerli.etherscan.io/tx/${receipt.transactionHash}`, JSON.stringify(decodedHexData))
+      .then(result => {
+        if (result === true) console.log("Tx Logged");
+        else  console.error('Tx log failed');
+      })
+} catch (e) {
+  console.log("Counld not log transaction.");
+}*/

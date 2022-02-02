@@ -74,7 +74,7 @@ module.exports = {
 
                 if (!userDetails.length){
                     const userDetails = await setDepositor(discordID, address);
-                    await this.updateCounts(userDetails.discordid, topUpAmount);
+                    //await this.updateCounts(userDetails.discordid, topUpAmount);
                     return true
                 }
                 userDetails = userDetails[0];
@@ -92,7 +92,7 @@ module.exports = {
                     return 402;
                 }
                 //refresh norequests
-                await this.updateCounts(discordID,topUpAmount)
+                //await this.updateCounts(discordID,topUpAmount)
                 return true
             } catch (e) {
                 console.log("Confirm transaction function failed.")

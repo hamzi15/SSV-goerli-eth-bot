@@ -84,32 +84,16 @@ module.exports = {
     setTimestamp().setColor(3447003);
   }
   let msg = await message.lineReply(embed);
-  const nonce = utils.getCachedNonce();
-  
+  const latestGasPrice = await getGasPrice();
+  //const nonce = utils.getCachedNonce();
+
+  var nonce = await utils.getNonce(); // nonce starts counting from 0
   try {
-    var latestGasPrice = await getGasPrice();
-    await utils.sendGoerliEth(address, msg, message, hexData, 32, nonce, latestGasPrice);
+    utils.sendGoerliEth(msg, message, hexData, 32, nonce, latestGasPrice);
   } catch (e) {
-    console.log("Gas price too low tx was not picked up by miner.")
-    try {
-      latestGasPrice = await getGasPrice()
-      if (message) {
-        embed.setDescription("**Transaction is still being processed**\nPlease continue to wait around ~10 minutes.").
-        setTimestamp().setColor(0xff1100);
-      }
-      await msg.edit(embed);
-      await utils.sendGoerliEth(address, msg, message, hexData, 32, nonce, latestGasPrice);
-    } catch (e) {
-      if (message) {
-        embed.setDescription("**Transaction Failed**\nPlease try again later").
-        setTimestamp().setColor(0xff1100);
-      }
-      await msg.edit(embed);
-      updateCounts(message.author.id,-32);
-    }
-    
+    console.log(e)
   }
-  await utils.incrementCachedNonce();
+  utils.incrementCachedNonce();
   }
 }
 // This runs once when imported (bot starting) to cache the nonce in a local file
@@ -160,3 +144,30 @@ var latestGasPrice = await getGasPrice();
   })
   .then(console.log("Tx successful"))
   .catch(console.log("Failed"))*/
+
+  function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+/*
+  try {
+    var latestGasPrice = await getGasPrice();
+    utils.sendGoerliEth(address, msg, message, hexData, 32, nonce, latestGasPrice);
+  } catch (e) {
+    console.log("Gas price too low tx was not picked up by miner.")
+    try {
+      latestGasPrice = await getGasPrice()
+      if (message) {
+        embed.setDescription("**Transaction is still being processed**\nPlease continue to wait around ~10 minutes.").
+        setTimestamp().setColor(0xff1100);
+      }
+      await msg.edit(embed);
+      utils.sendGoerliEth(address, msg, message, hexData, 32, nonce, latestGasPrice);
+    } catch (e) {
+      if (message) {
+        embed.setDescription("**Transaction Failed**\nPlease try again later").
+        setTimestamp().setColor(0xff1100);
+      }
+      await msg.edit(embed);
+      updateCounts(message.author.id,-32);
+    }
+  }*/
