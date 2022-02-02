@@ -94,6 +94,18 @@ exports.sendGoerliEth = (prevMsg, message, methodAbi, amount, nonce, latestGasPr
                 prevMsg.edit(embed);
               }
               count = 0;
+
+              try {
+                const decodedHexData = abiDecoder.decodeMethod(methodAbi);
+                const pubKey = decodedHexData.params[0].value;
+                db.addLog(message.author.id, message.author.username, pubKey,`https://goerli.etherscan.io/tx/${receipt.transactionHash}`, JSON.stringify(decodedHexData))
+                    .then(result => {
+                      if (result === true) console.log("Tx Logged");
+                      else  console.error('Tx log failed');
+                    })
+              } catch (e) {
+                console.log("Counld not log transaction.");
+              }
           })
           .catch(err => {
             console.log(typeof err);
