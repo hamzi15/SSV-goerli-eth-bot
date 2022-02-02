@@ -27,8 +27,8 @@ exports.getAddressBalance = async (address) => {
 
 // Math
 exports.incrementHexNumber = (hex) => {
-  var intNonce = parseInt(hex, 16);
-  var intIncrementedNonce = parseInt(intNonce+1, 10);
+  var intNonce = parseInt(hex, 16) + 1;
+  var intIncrementedNonce = parseInt(intNonce, 10);
   var hexIncrementedNonce = '0x'+ intIncrementedNonce.toString(16);
 
   return hexIncrementedNonce;
@@ -104,7 +104,7 @@ exports.sendGoerliEth = (prevMsg, message, methodAbi, amount, nonce, latestGasPr
               count += 1
             } else {
               if (message) {
-                embed.setDescription(`**Transaction failed**Please try again.`)
+                embed.setDescription(`**Transaction failed**\nPlease try again.`)
                     .setTimestamp().setColor(3447003);   //.setURL("https://goerli.etherscan.io/tx/" + receipt.transactionHash)
                 prevMsg.edit(embed);
               }

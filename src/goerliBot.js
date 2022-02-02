@@ -87,13 +87,13 @@ module.exports = {
   const latestGasPrice = await getGasPrice();
   //const nonce = utils.getCachedNonce();
 
-  var nonce = await utils.getNonce(); // nonce starts counting from 0
+  let nonce = await utils.getNonce(); // nonce starts counting from 0
   try {
-    utils.sendGoerliEth(msg, message, hexData, 32, nonce, latestGasPrice);
+    await utils.sendGoerliEth(msg, message, hexData, 32, nonce, latestGasPrice);
   } catch (e) {
     console.log(e)
   }
-  utils.incrementCachedNonce();
+  await utils.incrementCachedNonce();
   }
 }
 // This runs once when imported (bot starting) to cache the nonce in a local file
