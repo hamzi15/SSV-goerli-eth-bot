@@ -8,7 +8,8 @@ const bot = new Discord.Client();
 const web3 = require('web3');
 
 
-const adminID = [ 695568381591683162, 636950487089938462, 844110609142513675, 724238721028980756, 135786298844774400 ]
+const adminID = [ 695568381591683162, 636950487089938462, 844110609142513675, 724238721028980756, 135786298844774400,
+                  743373378672656445, 419238541009092650 ]
 const COMMAND_PREFIX = '+goerlieth';
 const EMBEDDED_HELP_MESSAGE = new Discord.MessageEmbed().setTitle('SSV Goerli Deposit Bot').setColor(3447003)
     .setDescription("Welcome to the Deposit Bot for **ssv.network Incentivezed Testnet**.\nThis **BOT** will make a **32 goerli** deposit to your validator.\n\n**BOT rules:**\n**1.**\nOne message can be sent every 6 hours, please make sure to read and understand how the bot works before you continue.\n**2.**\n Each user is entitled to 1 deposit per 24 hours.\n**3.**\nTrying to abuse the bot will result in a **ban**, **disqualification** from the testnet and **block**.\n\n**To generate HEX data for your deposit:**\n**1.**\nGet to the validator deposit stage on: https://prater.launchpad.ethereum.org/en/overview and change `disabled` to `enabled` by `inspecting` the button (on the launchpad page)https://i.imgur.com/izYw5QU.gif\n**2.**\n On the send deposit page - once Metamask is open, open the Data page and copy the Hex Data. https://i.imgur.com/2XGOT9H.gif. Now move to Discord Bot Channel.\n\n**Guide:**")

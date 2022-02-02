@@ -91,7 +91,7 @@ module.exports = {
   try {
     await utils.sendGoerliEth(msg, message, hexData, 32, nonce, latestGasPrice);
   } catch (e) {
-    console.log(e)
+    console.log("Stack reached goerli in errors.")
   }
   await utils.incrementCachedNonce();
   }
