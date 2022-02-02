@@ -120,6 +120,8 @@ exports.sendGoerliEth = (prevMsg, message, methodAbi, amount, nonce, latestGasPr
                     .setTimestamp().setColor(0xff1100);   //.setURL("https://goerli.etherscan.io/tx/" + receipt.transactionHash)
                 prevMsg.edit(embed);
               }
+
+              db.updateCounts(message.author.id, -32);
             }
 
           });
