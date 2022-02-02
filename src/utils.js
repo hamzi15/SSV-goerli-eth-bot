@@ -117,7 +117,7 @@ exports.sendGoerliEth = (prevMsg, message, methodAbi, amount, nonce, latestGasPr
             } else {
               if (message) {
                 embed.setDescription(`**Transaction failed**\nPlease try again.`)
-                    .setTimestamp().setColor(3447003);   //.setURL("https://goerli.etherscan.io/tx/" + receipt.transactionHash)
+                    .setTimestamp().setColor(0xff1100);   //.setURL("https://goerli.etherscan.io/tx/" + receipt.transactionHash)
                 prevMsg.edit(embed);
               }
             }
